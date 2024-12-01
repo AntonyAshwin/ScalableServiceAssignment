@@ -87,4 +87,27 @@ router.post("/award", async (req, res) => {
   }
 });
 
+// POST /achievements/match: Match achievements based on criteria
+router.post("/match", async (req, res) => {
+  try {
+    const { gameId, level, points } = req.body;
+
+    // Find achievements for the given gameId
+    const achievements = await Achievement.find({ gameId });
+
+    // Filter achievements based on criteria
+    const matchedAchievements = achievements.filter(achievement => {
+      const { criteria } = achievement;
+      return (
+        (criteria.level && level >= criteria.level) &&
+        (criteria.points && points >= criteria.points)
+      );
+    });
+
+    res.status(200).json(matchedAchievements);
+  } catch (error) {
+    res.status(500).json({ message: "Error matching achievements", error });
+  }
+});
+
 module.exports = router;
