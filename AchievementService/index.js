@@ -20,7 +20,7 @@ const achievementRoutes = require("./routes/achievementRoutes");
 app.use("/achievements", achievementRoutes);
 
 // Start the server
-const PORT = 8081;
+const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
   console.log(`Achievement Service running on http://localhost:${PORT}`);
 });
