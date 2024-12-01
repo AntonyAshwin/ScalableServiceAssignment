@@ -6,8 +6,14 @@ const PlayerAchievement = require("../models/PlayerAchievement");
 // POST /achievements: Create a new achievement
 router.post("/", async (req, res) => {
   try {
-    const { name, description, criteria } = req.body;
-    const achievement = new Achievement({ name, description, criteria });
+    const { name, description, gameId, criteria } = req.body;
+
+    // Validate criteria
+    if (!criteria || (!criteria.level && !criteria.points)) {
+      return res.status(400).json({ message: "Criteria must include either level or points or both." });
+    }
+
+    const achievement = new Achievement({ name, description, gameId, criteria });
     await achievement.save();
     res.status(201).json({ message: "Achievement created!", achievement });
   } catch (error) {

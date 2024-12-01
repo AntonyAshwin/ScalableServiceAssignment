@@ -30,14 +30,22 @@ paths:
                   type: string
                   description: A description of the achievement.
                   example: "Awarded when the player reaches level 10."
-                points:
-                  type: integer
-                  description: The points awarded for completing the achievement.
-                  example: 100
-                milestone:
+                gameId:
                   type: string
-                  description: The milestone that triggers this achievement.
-                  example: "Reach Level 10"
+                  description: The ID of the game the achievement is for.
+                  example: "game-12345"
+                criteria:
+                  type: object
+                  properties:
+                    level:
+                      type: integer
+                      description: The level required to unlock the achievement.
+                      example: 10
+                    points:
+                      type: integer
+                      description: The points required to unlock the achievement.
+                      example: 1000
+                  description: The criteria to unlock the achievement.
       responses:
         '201':
           description: Achievement created successfully
