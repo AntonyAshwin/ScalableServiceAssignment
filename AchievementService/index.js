@@ -12,21 +12,6 @@ mongoose.connect(process.env.MONGO_URI, {
   useUnifiedTopology: true,
 });
 
-// Schema and Model
-const achievementSchema = new mongoose.Schema({
-  name: String, // Name of the achievement
-  description: String, // Description of the achievement
-  criteria: Object, // Criteria to unlock the achievement
-});
-
-const playerAchievementSchema = new mongoose.Schema({
-  playerId: String, // Player's unique ID
-  achievements: [String], // List of achievement names
-});
-
-const Achievement = require("./models/Achievement");
-const PlayerAchievement = require("./models/PlayerAchievement");
-
 // Health Check
 app.get("/", (req, res) => res.send("Achievement Service is running!"));
 

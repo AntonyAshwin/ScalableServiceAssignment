@@ -22,14 +22,33 @@ router.post("/", async (req, res) => {
 });
 
 // GET /achievements/:playerId: Retrieve the achievements earned by a player
-router.get("/:playerId", async (req, res) => {
+router.get("/:gameId", async (req, res) => {
   try {
-    const { playerId } = req.params;
-    const playerAchievements = await PlayerAchievement.findOne({ playerId });
-    if (!playerAchievements) {
-      return res.status(404).json({ message: "Player not found!" });
+    const { gameId } = req.params;
+    console.log(gameId);
+    const achievements = await Achievement.find({ gameId });
+    if (!achievements || achievements.length === 0) {
+      return res.status(404).json({ message: "No achievements found for this gameId!" });
     }
-    res.status(200).json({ achievements: playerAchievements.achievements });
+    res.status(200).json({ achievements });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving achievements", error });
+  }
+});
+
+// GET /achievements/:gameId: Retrieve the achievements for a game
+router.get("/:gameId", async (req, res) => {
+  try {
+    const { gameId } = req.params;
+
+    // Find achievements for the given gameId
+    const achievements = await Achievement.find({ gameId });
+
+    if (!achievements || achievements.length === 0) {
+      return res.status(404).json({ message: "No achievements found for this gameId!" });
+    }
+
+    res.status(200).json(achievements);
   } catch (error) {
     res.status(500).json({ message: "Error retrieving achievements", error });
   }
