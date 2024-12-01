@@ -31,7 +31,7 @@ import javax.annotation.Generated;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-12-01T14:56:16.342685+05:30[Asia/Kolkata]", comments = "Generator version: 7.10.0")
 @Controller
-@RequestMapping("${openapi.gameService.base-path:/ANTONYASHWIN555/ScalableServices/1.0.0}")
+@RequestMapping("${openapi.gameService.base-path:}")
 public class PlayersApiController implements PlayersApi {
 
     private final NativeWebRequest request;
