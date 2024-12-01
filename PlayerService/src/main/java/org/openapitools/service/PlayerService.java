@@ -34,4 +34,8 @@ public class PlayerService {
             return response;
         });
     }
+
+    public Optional<Player> findByGameIdAndName(String gameId, String name) {
+        return playerRepository.findByGameIdAndName(gameId, name);
+    }
 }

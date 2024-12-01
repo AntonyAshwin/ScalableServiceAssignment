@@ -3,6 +3,7 @@ package org.openapitools.api;
 import org.openapitools.model.CreatePlayer201Response;
 import org.openapitools.model.CreatePlayerRequest;
 import org.openapitools.model.GetPlayer200Response;
+import org.openapitools.model.GetPlayerDetailsResponse;
 import org.openapitools.model.Player;
 import org.openapitools.model.PlayerProgressResponse;
 import org.openapitools.model.UpdatePlayerProgressRequest;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import javax.validation.Valid;
@@ -67,6 +69,21 @@ public class PlayersApiController implements PlayersApi {
             response.setName(player.getName());
             response.setEmail(player.getEmail());
             response.setGameId(player.getGameId());
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @RequestMapping(value = "/details", method = RequestMethod.GET, produces = "application/json")
+    @Override
+    public ResponseEntity<GetPlayerDetailsResponse> getPlayerDetails(@RequestParam String gameId, @RequestParam String name) {
+        Optional<Player> playerOptional = playerService.findByGameIdAndName(gameId, name);
+        if (playerOptional.isPresent()) {
+            Player player = playerOptional.get();
+            GetPlayerDetailsResponse response = new GetPlayerDetailsResponse();
+            response.setPlayerId(player.getPlayerId());
+            response.setEmail(player.getEmail());
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.notFound().build();

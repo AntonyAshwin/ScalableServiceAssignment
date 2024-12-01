@@ -10,6 +10,7 @@ import org.openapitools.model.CreatePlayerRequest;
 import org.openapitools.model.GetPlayer200Response;
 import org.openapitools.model.UpdatePlayerProgressRequest;
 import org.openapitools.model.PlayerProgressResponse;
+import org.openapitools.model.GetPlayerDetailsResponse;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -175,6 +176,27 @@ public interface PlayersApi {
     )
     ResponseEntity<PlayerProgressResponse> getPlayerProgress(
         @Parameter(name = "playerId", description = "The unique identifier of the player.", required = true, in = ParameterIn.PATH) @PathVariable("playerId") String playerId
+    );
+
+    @Operation(
+        operationId = "getPlayerDetails",
+        summary = "Retrieve player details by gameId and name",
+        tags = { "Players" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Player details retrieved successfully", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = GetPlayerDetailsResponse.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "Player not found")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = "/players/details",
+        produces = { "application/json" }
+    )
+    ResponseEntity<GetPlayerDetailsResponse> getPlayerDetails(
+        @Parameter(name = "gameId", description = "The ID of the game the player is registered for.", required = true, in = ParameterIn.QUERY) @RequestParam("gameId") String gameId,
+        @Parameter(name = "name", description = "The name of the player.", required = true, in = ParameterIn.QUERY) @RequestParam("name") String name
     );
 
 }

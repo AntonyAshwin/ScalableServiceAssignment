@@ -11,6 +11,7 @@
 /Users/I528714/3rdsem/ss/PlayerService/src/main/java/org/openapitools/service/PlayerService.java
 /Users/I528714/3rdsem/ss/PlayerService/src/main/java/org/openapitools/configuration/HomeController.java
 /Users/I528714/3rdsem/ss/PlayerService/src/main/java/org/openapitools/model/UpdatePlayerProgressRequest.java
+/Users/I528714/3rdsem/ss/PlayerService/src/main/java/org/openapitools/model/GetPlayerDetailsResponse.java
 /Users/I528714/3rdsem/ss/PlayerService/src/main/java/org/openapitools/api/ApiUtil.java
 /Users/I528714/3rdsem/ss/PlayerService/src/main/java/org/openapitools/configuration/SpringDocConfiguration.java
 /Users/I528714/3rdsem/ss/PlayerService/src/main/java/org/openapitools/api/PlayersApiController.java

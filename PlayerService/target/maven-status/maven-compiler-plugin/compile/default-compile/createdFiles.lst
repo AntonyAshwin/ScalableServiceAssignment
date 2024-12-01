@@ -4,6 +4,7 @@ org/openapitools/configuration/HomeController.class
 org/openapitools/model/GetPlayer200Response.class
 org/openapitools/api/PlayersApi.class
 org/openapitools/RFC3339DateFormat.class
+org/openapitools/model/GetPlayerDetailsResponse.class
 org/openapitools/model/Player.class
 org/openapitools/api/PlayersApiController.class
 org/openapitools/service/PlayerService.class
