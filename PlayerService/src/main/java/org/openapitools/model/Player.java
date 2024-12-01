@@ -81,9 +81,4 @@ public class Player {
     public void setMilestones(List<String> milestones) {
         this.milestones = milestones;
     }
-
-    // Add this method
-    public String getPlayerId() {
-        return id;
-    }
 }

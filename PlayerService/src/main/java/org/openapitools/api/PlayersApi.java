@@ -149,11 +149,12 @@ public interface PlayersApi {
         }
     )
     @RequestMapping(
-        method = RequestMethod.PUT,
+        method = RequestMethod.PATCH ,
         value = "/players/{playerId}/progress",
-        consumes = { "application/json" }
+        consumes = { "application/json" },
+        produces = { "application/json" }
     )
-    ResponseEntity<Void> updatePlayerProgress(
+    ResponseEntity<PlayerProgressResponse> updatePlayerProgress(
         @Parameter(name = "playerId", description = "The unique identifier of the player.", required = true, in = ParameterIn.PATH) @PathVariable("playerId") String playerId,
         @Parameter(name = "UpdatePlayerProgressRequest", description = "The updated progress data for the player.") @Valid @RequestBody UpdatePlayerProgressRequest updatePlayerProgressRequest
     );

@@ -5,6 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public class PlayerProgressResponse {
+    @JsonProperty("id")
+    private String id;
+
+    @JsonProperty("gameId")
+    private String gameId;
+
     @JsonProperty("level")
     private int level;
 
@@ -13,6 +19,24 @@ public class PlayerProgressResponse {
 
     @JsonProperty("milestones")
     private List<String> milestones;
+
+    @Schema(name = "id", example = "player-12345", description = "The unique identifier of the player.")
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Schema(name = "gameId", example = "game-12345", description = "The ID of the game the player is registered for.")
+    public String getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
+    }
 
     @Schema(name = "level", example = "5", description = "The current level of the player.")
     public int getLevel() {

@@ -1,48 +1,25 @@
 package org.openapitools.api;
 
+import org.openapitools.model.Player;
 import org.openapitools.model.CreatePlayer201Response;
 import org.openapitools.model.CreatePlayerRequest;
 import org.openapitools.model.GetPlayer200Response;
-import org.openapitools.model.GetPlayerDetailsResponse;
-import org.openapitools.model.Player;
 import org.openapitools.model.PlayerProgressResponse;
 import org.openapitools.model.UpdatePlayerProgressRequest;
 import org.openapitools.service.PlayerService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
 import java.util.Optional;
-import javax.annotation.Generated;
 
 @Controller
 @RequestMapping("/players")
-public class PlayersApiController implements PlayersApi {
-
+public class PlayersApiController {
     @Autowired
     private PlayerService playerService;
-
-    private final NativeWebRequest request;
-
-    @Autowired
-    public PlayersApiController(NativeWebRequest request) {
-        this.request = request;
-    }
-
-    @Override
-    public Optional<NativeWebRequest> getRequest() {
-        return Optional.ofNullable(request);
-    }
 
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     public ResponseEntity<CreatePlayer201Response> createPlayer(@Valid @RequestBody CreatePlayerRequest createPlayerRequest) {
@@ -54,7 +31,7 @@ public class PlayersApiController implements PlayersApi {
         Player createdPlayer = playerService.createPlayer(player);
 
         CreatePlayer201Response response = new CreatePlayer201Response();
-        response.setPlayerId(createdPlayer.getPlayerId());
+        response.setPlayerId(createdPlayer.getId());
 
         return ResponseEntity.status(201).body(response);
     }
@@ -65,7 +42,7 @@ public class PlayersApiController implements PlayersApi {
         if (playerOptional.isPresent()) {
             Player player = playerOptional.get();
             GetPlayer200Response response = new GetPlayer200Response();
-            response.setPlayerId(player.getPlayerId());
+            response.setPlayerId(player.getId());
             response.setName(player.getName());
             response.setEmail(player.getEmail());
             response.setGameId(player.getGameId());
@@ -75,56 +52,60 @@ public class PlayersApiController implements PlayersApi {
         }
     }
 
-    @RequestMapping(value = "/details", method = RequestMethod.GET, produces = "application/json")
-    @Override
-    public ResponseEntity<GetPlayerDetailsResponse> getPlayerDetails(@RequestParam String gameId, @RequestParam String name) {
-        Optional<Player> playerOptional = playerService.findByGameIdAndName(gameId, name);
+    @RequestMapping(value = "/{playerId}/progress", method = RequestMethod.PATCH, consumes = "application/json", produces = "application/json")
+    public ResponseEntity<PlayerProgressResponse> updatePlayerProgress(@PathVariable String playerId, @Valid @RequestBody UpdatePlayerProgressRequest updatePlayerProgressRequest) {
+        Optional<Player> playerOptional = playerService.findById(playerId);
         if (playerOptional.isPresent()) {
             Player player = playerOptional.get();
-            GetPlayerDetailsResponse response = new GetPlayerDetailsResponse();
-            response.setPlayerId(player.getPlayerId());
-            response.setEmail(player.getEmail());
+
+            if (updatePlayerProgressRequest.getLevel() != null) {
+                player.setLevel(updatePlayerProgressRequest.getLevel());
+            }
+
+            if (updatePlayerProgressRequest.getPoints() != null) {
+                player.setPoints(updatePlayerProgressRequest.getPoints());
+            }
+
+            if (updatePlayerProgressRequest.getMilestones() != null) {
+                player.setMilestones(updatePlayerProgressRequest.getMilestones());
+            }
+
+            playerService.save(player);
+
+            PlayerProgressResponse response = new PlayerProgressResponse();
+            response.setId(player.getId());
+            response.setGameId(player.getGameId());
+            response.setLevel(player.getLevel());
+            response.setPoints(player.getPoints());
+            response.setMilestones(player.getMilestones());
+
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @RequestMapping(value = "/{playerId}/progress", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
-    @Override
-    public ResponseEntity<Void> updatePlayerProgress(@PathVariable String playerId, @Valid @RequestBody UpdatePlayerProgressRequest updatePlayerProgressRequest) {
-        Optional<Player> playerOptional = playerService.findById(playerId);
-        if (playerOptional.isPresent()) {
-            Player player = playerOptional.get();
-
-            // Check if level is present in the request
-            if (updatePlayerProgressRequest.getLevel() != null) {
-                player.setLevel(updatePlayerProgressRequest.getLevel());
-            }
-
-            // Check if points are present in the request
-            if (updatePlayerProgressRequest.getPoints() != null) {
-                player.setPoints(updatePlayerProgressRequest.getPoints());
-            }
-
-            // Check if milestones are present in the request
-            if (updatePlayerProgressRequest.getMilestones() != null) {
-                player.setMilestones(updatePlayerProgressRequest.getMilestones());
-            }
-
-            playerService.save(player);
-            return ResponseEntity.ok().build();
+    @RequestMapping(value = "/{playerId}/progress", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<PlayerProgressResponse> getPlayerProgress(@PathVariable String playerId) {
+        Optional<PlayerProgressResponse> progressOptional = playerService.getPlayerProgress(playerId);
+        if (progressOptional.isPresent()) {
+            return ResponseEntity.ok(progressOptional.get());
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @RequestMapping(value = "/{playerId}/progress", method = RequestMethod.GET, produces = "application/json")
-    @Override
-    public ResponseEntity<PlayerProgressResponse> getPlayerProgress(@PathVariable String playerId) {
-        Optional<PlayerProgressResponse> progressOptional = playerService.getPlayerProgress(playerId);
-        if (progressOptional.isPresent()) {
-            return ResponseEntity.ok(progressOptional.get());
+    @GetMapping("/details")
+    public ResponseEntity<GetPlayer200Response> getPlayerDetails(@RequestParam String gameId, @RequestParam String name) {
+        Optional<Player> playerOptional = playerService.findByGameIdAndName(gameId, name);
+        if (playerOptional.isPresent()) {
+            Player player = playerOptional.get();
+            GetPlayer200Response response = new GetPlayer200Response();
+            response.setPlayerId(player.getId());
+            response.setName(player.getName());
+            response.setEmail(player.getEmail());
+            response.setGameId(player.getGameId());
+            return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.notFound().build();
         }

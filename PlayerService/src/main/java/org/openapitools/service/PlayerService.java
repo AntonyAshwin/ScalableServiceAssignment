@@ -28,6 +28,8 @@ public class PlayerService {
     public Optional<PlayerProgressResponse> getPlayerProgress(String playerId) {
         return playerRepository.findById(playerId).map(player -> {
             PlayerProgressResponse response = new PlayerProgressResponse();
+            response.setId(player.getId());
+            response.setGameId(player.getGameId());
             response.setLevel(player.getLevel());
             response.setPoints(player.getPoints());
             response.setMilestones(player.getMilestones());
