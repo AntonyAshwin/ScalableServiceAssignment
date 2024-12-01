@@ -1,6 +1,7 @@
 package org.openapitools.service;
 
 import org.openapitools.model.Player;
+import org.openapitools.model.PlayerProgressResponse;
 import org.openapitools.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,5 +23,15 @@ public class PlayerService {
 
     public Player save(Player player) {
         return playerRepository.save(player);
+    }
+
+    public Optional<PlayerProgressResponse> getPlayerProgress(String playerId) {
+        return playerRepository.findById(playerId).map(player -> {
+            PlayerProgressResponse response = new PlayerProgressResponse();
+            response.setLevel(player.getLevel());
+            response.setPoints(player.getPoints());
+            response.setMilestones(player.getMilestones());
+            return response;
+        });
     }
 }

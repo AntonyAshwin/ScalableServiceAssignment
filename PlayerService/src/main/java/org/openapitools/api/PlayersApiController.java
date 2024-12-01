@@ -4,6 +4,7 @@ import org.openapitools.model.CreatePlayer201Response;
 import org.openapitools.model.CreatePlayerRequest;
 import org.openapitools.model.GetPlayer200Response;
 import org.openapitools.model.Player;
+import org.openapitools.model.PlayerProgressResponse;
 import org.openapitools.model.UpdatePlayerProgressRequest;
 import org.openapitools.service.PlayerService;
 
@@ -96,6 +97,17 @@ public class PlayersApiController implements PlayersApi {
 
             playerService.save(player);
             return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @RequestMapping(value = "/{playerId}/progress", method = RequestMethod.GET, produces = "application/json")
+    @Override
+    public ResponseEntity<PlayerProgressResponse> getPlayerProgress(@PathVariable String playerId) {
+        Optional<PlayerProgressResponse> progressOptional = playerService.getPlayerProgress(playerId);
+        if (progressOptional.isPresent()) {
+            return ResponseEntity.ok(progressOptional.get());
         } else {
             return ResponseEntity.notFound().build();
         }

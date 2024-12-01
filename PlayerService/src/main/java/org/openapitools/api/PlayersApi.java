@@ -9,6 +9,7 @@ import org.openapitools.model.CreatePlayer201Response;
 import org.openapitools.model.CreatePlayerRequest;
 import org.openapitools.model.GetPlayer200Response;
 import org.openapitools.model.UpdatePlayerProgressRequest;
+import org.openapitools.model.PlayerProgressResponse;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -154,6 +155,26 @@ public interface PlayersApi {
     ResponseEntity<Void> updatePlayerProgress(
         @Parameter(name = "playerId", description = "The unique identifier of the player.", required = true, in = ParameterIn.PATH) @PathVariable("playerId") String playerId,
         @Parameter(name = "UpdatePlayerProgressRequest", description = "The updated progress data for the player.") @Valid @RequestBody UpdatePlayerProgressRequest updatePlayerProgressRequest
+    );
+
+    @Operation(
+        operationId = "getPlayerProgress",
+        summary = "Retrieve player progress (level, points, milestones)",
+        tags = { "Players" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Player progress retrieved successfully", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = PlayerProgressResponse.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "Player not found")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = "/players/{playerId}/progress",
+        produces = { "application/json" }
+    )
+    ResponseEntity<PlayerProgressResponse> getPlayerProgress(
+        @Parameter(name = "playerId", description = "The unique identifier of the player.", required = true, in = ParameterIn.PATH) @PathVariable("playerId") String playerId
     );
 
 }
