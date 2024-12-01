@@ -78,9 +78,22 @@ public class PlayersApiController implements PlayersApi {
         Optional<Player> playerOptional = playerService.findById(playerId);
         if (playerOptional.isPresent()) {
             Player player = playerOptional.get();
-            player.setLevel(updatePlayerProgressRequest.getLevel());
-            player.setPoints(updatePlayerProgressRequest.getPoints());
-            player.setMilestones(updatePlayerProgressRequest.getMilestones());
+
+            // Check if level is present in the request
+            if (updatePlayerProgressRequest.getLevel() != null) {
+                player.setLevel(updatePlayerProgressRequest.getLevel());
+            }
+
+            // Check if points are present in the request
+            if (updatePlayerProgressRequest.getPoints() != null) {
+                player.setPoints(updatePlayerProgressRequest.getPoints());
+            }
+
+            // Check if milestones are present in the request
+            if (updatePlayerProgressRequest.getMilestones() != null) {
+                player.setMilestones(updatePlayerProgressRequest.getMilestones());
+            }
+
             playerService.save(player);
             return ResponseEntity.ok().build();
         } else {

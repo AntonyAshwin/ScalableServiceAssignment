@@ -26,26 +26,26 @@ import javax.annotation.Generated;
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-12-01T14:56:16.342685+05:30[Asia/Kolkata]", comments = "Generator version: 7.10.0")
 public class UpdatePlayerProgressRequest {
 
-  private int level;
+  private Integer level;
 
-  private int points;
+  private Integer points;
 
   @Valid
   private List<String> milestones;
 
-  public int getLevel() {
+  public Integer getLevel() {
     return level;
   }
 
-  public void setLevel(int level) {
+  public void setLevel(Integer level) {
     this.level = level;
   }
 
-  public int getPoints() {
+  public Integer getPoints() {
     return points;
   }
 
-  public void setPoints(int points) {
+  public void setPoints(Integer points) {
     this.points = points;
   }
 
