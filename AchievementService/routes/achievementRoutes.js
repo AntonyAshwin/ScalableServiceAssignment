@@ -103,7 +103,13 @@ router.post("/match", async (req, res) => {
       return levelMatch && pointsMatch;
     });
 
-    res.status(200).json(matchedAchievements);
+    // Map to only return names and descriptions
+    const result = matchedAchievements.map(achievement => ({
+      name: achievement.name,
+      description: achievement.description,
+    }));
+
+    res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: "Error matching achievements", error });
   }
