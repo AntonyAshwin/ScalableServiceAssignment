@@ -1,0 +1,127 @@
+openapi: 3.0.1
+info:
+  title: Game Service API
+  description: This API manages player achievements and awards them based on milestones.
+  version: 1.0.0
+  contact:
+    name: Your Name
+    email: your-email@example.com
+    url: https://www.example.com
+
+paths:
+  /achievements:
+    post:
+      summary: Create a new achievement
+      operationId: createAchievement
+      tags:
+        - Achievements
+      requestBody:
+        description: The achievement object that needs to be created.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the achievement (e.g., "Level Up", "Score Milestone").
+                  example: "Level Up"
+                description:
+                  type: string
+                  description: A description of the achievement.
+                  example: "Awarded when the player reaches level 10."
+                points:
+                  type: integer
+                  description: The points awarded for completing the achievement.
+                  example: 100
+                milestone:
+                  type: string
+                  description: The milestone that triggers this achievement.
+                  example: "Reach Level 10"
+      responses:
+        '201':
+          description: Achievement created successfully
+        '400':
+          description: Invalid request body
+
+  /achievements/{playerId}:
+    get:
+      summary: Retrieve the achievements earned by a player
+      operationId: getPlayerAchievements
+      tags:
+        - Achievements
+      parameters:
+        - name: playerId
+          in: path
+          required: true
+          description: The unique identifier of the player.
+          schema:
+            type: string
+            example: "player-12345"
+      responses:
+        '200':
+          description: Achievements retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    achievementId:
+                      type: string
+                      description: The unique identifier of the achievement.
+                      example: "achievement-56789"
+                    name:
+                      type: string
+                      description: The name of the achievement.
+                      example: "Level Up"
+                    points:
+                      type: integer
+                      description: The points awarded for the achievement.
+                      example: 100
+                    description:
+                      type: string
+                      description: The description of the achievement.
+                      example: "Awarded when the player reaches level 10."
+                    awardedAt:
+                      type: string
+                      format: date-time
+                      description: The date and time when the achievement was awarded.
+                      example: "2024-12-01T10:00:00Z"
+        '404':
+          description: Player not found
+
+  /achievements/award:
+    post:
+      summary: Award an achievement to a player based on their progress
+      operationId: awardAchievement
+      tags:
+        - Achievements
+      requestBody:
+        description: The data for awarding an achievement to the player.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                playerId:
+                  type: string
+                  description: The unique identifier of the player.
+                  example: "player-12345"
+                achievementId:
+                  type: string
+                  description: The unique identifier of the achievement to be awarded.
+                  example: "achievement-56789"
+                awardedAt:
+                  type: string
+                  format: date-time
+                  description: The date and time when the achievement is awarded.
+                  example: "2024-12-01T10:00:00Z"
+      responses:
+        '200':
+          description: Achievement awarded successfully
+        '400':
+          description: Invalid request body
+        '404':
+          description: Player or achievement not found

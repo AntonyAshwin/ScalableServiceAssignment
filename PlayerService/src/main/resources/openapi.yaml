@@ -1,0 +1,187 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: your-email@example.com
+    name: Your Name
+    url: https://www.example.com
+  description: "This API manages player profiles, tracks in-game progress, awards\
+    \ achievements based on player milestones, and sends notifications."
+  title: Game Service API
+  version: 1.0.0
+servers:
+- description: SwaggerHub API Auto Mocking
+  url: https://virtserver.swaggerhub.com/ANTONYASHWIN555/ScalableServices/1.0.0
+- description: Production server
+  url: https://api.example.com/v1
+- description: Staging server
+  url: https://api-staging.example.com/v1
+paths:
+  /players:
+    post:
+      operationId: createPlayer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createPlayer_request'
+        description: The player object that needs to be created.
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createPlayer_201_response'
+          description: Player created successfully
+        "400":
+          description: Invalid request body
+      summary: Create a new player
+      tags:
+      - Players
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Players
+  /players/{playerId}:
+    get:
+      operationId: getPlayer
+      parameters:
+      - description: The unique identifier of the player.
+        explode: false
+        in: path
+        name: playerId
+        required: true
+        schema:
+          example: player-12345
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getPlayer_200_response'
+          description: Player details retrieved successfully
+        "404":
+          description: Player not found
+      summary: Retrieve player details
+      tags:
+      - Players
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Players
+  /players/{playerId}/progress:
+    put:
+      operationId: updatePlayerProgress
+      parameters:
+      - description: The unique identifier of the player.
+        explode: false
+        in: path
+        name: playerId
+        required: true
+        schema:
+          example: player-12345
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updatePlayerProgress_request'
+        description: The updated progress data for the player.
+      responses:
+        "200":
+          description: Player progress updated successfully
+        "400":
+          description: Invalid request body
+        "404":
+          description: Player not found
+      summary: "Update player progress (e.g., levels, points, milestones)"
+      tags:
+      - Players
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Players
+components:
+  schemas:
+    updatePlayerProgress_request:
+      properties:
+        level:
+          description: The current level of the player.
+          example: 5
+          type: integer
+        points:
+          description: The points the player has earned.
+          example: 1500
+          type: integer
+        milestones:
+          description: List of milestones the player has achieved.
+          example:
+          - First Kill
+          - Reached Level 5
+          items:
+            type: string
+          type: array
+      type: object
+    createPlayer_request:
+      properties:
+        name:
+          description: The name of the player.
+          example: John Doe
+          type: string
+        email:
+          description: The email of the player.
+          example: john.doe@example.com
+          type: string
+        gameId:
+          description: The ID of the game the player is registered for.
+          example: game-12345
+          type: string
+        createdAt:
+          description: The date and time when the player was created.
+          example: 2024-12-01T00:00:00Z
+          format: date-time
+          type: string
+      type: object
+    getPlayer_200_response:
+      example:
+        gameId: game-12345
+        createdAt: 2024-12-01T00:00:00Z
+        name: John Doe
+        email: john.doe@example.com
+        playerId: player-12345
+      properties:
+        playerId:
+          description: The unique identifier of the player.
+          example: player-12345
+          type: string
+        name:
+          description: The name of the player.
+          example: John Doe
+          type: string
+        email:
+          description: The email of the player.
+          example: john.doe@example.com
+          type: string
+        gameId:
+          description: The ID of the game the player is registered for.
+          example: game-12345
+          type: string
+        createdAt:
+          description: The date and time when the player was created.
+          example: 2024-12-01T00:00:00Z
+          format: date-time
+          type: string
+      type: object
+    createPlayer_201_response:
+      example:
+        playerId: player-12345
+      properties:
+        playerId:
+          description: The unique identifier for the player.
+          example: player-12345
+          type: string
+      type: object
