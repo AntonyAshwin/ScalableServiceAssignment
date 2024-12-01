@@ -4,6 +4,7 @@ import org.openapitools.model.CreatePlayer201Response;
 import org.openapitools.model.CreatePlayerRequest;
 import org.openapitools.model.GetPlayer200Response;
 import org.openapitools.model.Player;
+import org.openapitools.model.UpdatePlayerProgressRequest;
 import org.openapitools.service.PlayerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,22 @@ public class PlayersApiController implements PlayersApi {
             response.setEmail(player.getEmail());
             response.setGameId(player.getGameId());
             return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @RequestMapping(value = "/{playerId}/progress", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
+    @Override
+    public ResponseEntity<Void> updatePlayerProgress(@PathVariable String playerId, @Valid @RequestBody UpdatePlayerProgressRequest updatePlayerProgressRequest) {
+        Optional<Player> playerOptional = playerService.findById(playerId);
+        if (playerOptional.isPresent()) {
+            Player player = playerOptional.get();
+            player.setLevel(updatePlayerProgressRequest.getLevel());
+            player.setPoints(updatePlayerProgressRequest.getPoints());
+            player.setMilestones(updatePlayerProgressRequest.getMilestones());
+            playerService.save(player);
+            return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();
         }

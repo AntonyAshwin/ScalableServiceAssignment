@@ -19,4 +19,8 @@ public class PlayerService {
     public Optional<Player> findById(String playerId) {
         return playerRepository.findById(playerId);
     }
+
+    public Player save(Player player) {
+        return playerRepository.save(player);
+    }
 }

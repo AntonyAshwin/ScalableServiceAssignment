@@ -26,73 +26,29 @@ import javax.annotation.Generated;
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-12-01T14:56:16.342685+05:30[Asia/Kolkata]", comments = "Generator version: 7.10.0")
 public class UpdatePlayerProgressRequest {
 
-  private Integer level;
+  private int level;
 
-  private Integer points;
+  private int points;
 
   @Valid
-  private List<String> milestones = new ArrayList<>();
+  private List<String> milestones;
 
-  public UpdatePlayerProgressRequest level(Integer level) {
-    this.level = level;
-    return this;
-  }
-
-  /**
-   * The current level of the player.
-   * @return level
-   */
-  
-  @Schema(name = "level", example = "5", description = "The current level of the player.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("level")
-  public Integer getLevel() {
+  public int getLevel() {
     return level;
   }
 
-  public void setLevel(Integer level) {
+  public void setLevel(int level) {
     this.level = level;
   }
 
-  public UpdatePlayerProgressRequest points(Integer points) {
-    this.points = points;
-    return this;
-  }
-
-  /**
-   * The points the player has earned.
-   * @return points
-   */
-  
-  @Schema(name = "points", example = "1500", description = "The points the player has earned.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("points")
-  public Integer getPoints() {
+  public int getPoints() {
     return points;
   }
 
-  public void setPoints(Integer points) {
+  public void setPoints(int points) {
     this.points = points;
   }
 
-  public UpdatePlayerProgressRequest milestones(List<String> milestones) {
-    this.milestones = milestones;
-    return this;
-  }
-
-  public UpdatePlayerProgressRequest addMilestonesItem(String milestonesItem) {
-    if (this.milestones == null) {
-      this.milestones = new ArrayList<>();
-    }
-    this.milestones.add(milestonesItem);
-    return this;
-  }
-
-  /**
-   * List of milestones the player has achieved.
-   * @return milestones
-   */
-  
-  @Schema(name = "milestones", example = "[\"First Kill\",\"Reached Level 5\"]", description = "List of milestones the player has achieved.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("milestones")
   public List<String> getMilestones() {
     return milestones;
   }

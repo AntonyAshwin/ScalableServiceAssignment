@@ -151,13 +151,9 @@ public interface PlayersApi {
         value = "/players/{playerId}/progress",
         consumes = { "application/json" }
     )
-    
-    default ResponseEntity<Void> updatePlayerProgress(
+    ResponseEntity<Void> updatePlayerProgress(
         @Parameter(name = "playerId", description = "The unique identifier of the player.", required = true, in = ParameterIn.PATH) @PathVariable("playerId") String playerId,
-        @Parameter(name = "UpdatePlayerProgressRequest", description = "The updated progress data for the player.") @Valid @RequestBody(required = false) UpdatePlayerProgressRequest updatePlayerProgressRequest
-    ) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
-    }
+        @Parameter(name = "UpdatePlayerProgressRequest", description = "The updated progress data for the player.") @Valid @RequestBody UpdatePlayerProgressRequest updatePlayerProgressRequest
+    );
 
 }
