@@ -98,10 +98,9 @@ router.post("/match", async (req, res) => {
     // Filter achievements based on criteria
     const matchedAchievements = achievements.filter(achievement => {
       const { criteria } = achievement;
-      return (
-        (criteria.level && level >= criteria.level) &&
-        (criteria.points && points >= criteria.points)
-      );
+      const levelMatch = criteria.level ? (level === -1 || level >= criteria.level) : true;
+      const pointsMatch = criteria.points ? (points === -1 || points >= criteria.points) : true;
+      return levelMatch && pointsMatch;
     });
 
     res.status(200).json(matchedAchievements);
