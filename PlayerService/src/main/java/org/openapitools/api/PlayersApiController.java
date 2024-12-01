@@ -2,12 +2,15 @@ package org.openapitools.api;
 
 import org.openapitools.model.CreatePlayer201Response;
 import org.openapitools.model.CreatePlayerRequest;
+import org.openapitools.model.GetPlayer200Response;
 import org.openapitools.model.Player;
 import org.openapitools.service.PlayerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -50,5 +53,21 @@ public class PlayersApiController implements PlayersApi {
         response.setPlayerId(createdPlayer.getPlayerId());
 
         return ResponseEntity.status(201).body(response);
+    }
+
+    @GetMapping("/{playerId}")
+    public ResponseEntity<GetPlayer200Response> getPlayer(@PathVariable String playerId) {
+        Optional<Player> playerOptional = playerService.findById(playerId);
+        if (playerOptional.isPresent()) {
+            Player player = playerOptional.get();
+            GetPlayer200Response response = new GetPlayer200Response();
+            response.setPlayerId(player.getPlayerId());
+            response.setName(player.getName());
+            response.setEmail(player.getEmail());
+            response.setGameId(player.getGameId());
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
