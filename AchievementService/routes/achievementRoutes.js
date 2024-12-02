@@ -66,7 +66,7 @@ router.get("/:gameId", async (req, res) => {
 // POST /achievements/match: Match achievements based on criteria
 router.post("/match", async (req, res) => {
   try {
-    const { gameId, level, points } = req.body;
+    const { gameId, level, points, milestones } = req.body;
 
     // Find achievements for the given gameId
     const achievements = await Achievement.find({ gameId });
@@ -84,6 +84,12 @@ router.post("/match", async (req, res) => {
       name: achievement.name,
       description: achievement.description,
     }));
+
+    // Compare matched achievements with milestones
+    const newAchievements = result.filter(achievement => !milestones.includes(achievement.name));
+
+    // Log new achievements
+    console.log('New Achievements:', newAchievements);
 
     res.status(200).json(result);
   } catch (error) {
