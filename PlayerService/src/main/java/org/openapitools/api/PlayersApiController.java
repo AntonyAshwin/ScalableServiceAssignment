@@ -9,6 +9,7 @@ import org.openapitools.model.PlayerProgressResponse;
 import org.openapitools.model.UpdatePlayerProgressRequest;
 import org.openapitools.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,9 @@ public class PlayersApiController {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Value("${achievement.service.url}")
+    private String achievementsUrl;
 
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     public ResponseEntity<CreatePlayer201Response> createPlayer(@Valid @RequestBody CreatePlayerRequest createPlayerRequest) {
@@ -90,7 +94,6 @@ public class PlayersApiController {
             response.setMilestones(player.getMilestones());
 
             // Make HTTP call to achievements service
-            String achievementsUrl = "http://localhost:8081/achievements/match";
             ResponseEntity<List<AchievementResponse>> achievementsResponse = restTemplate.exchange(
                 achievementsUrl,
                 HttpMethod.POST,
