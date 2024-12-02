@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 import java.util.Optional;
@@ -20,6 +21,9 @@ import java.util.Optional;
 public class PlayersApiController {
     @Autowired
     private PlayerService playerService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     public ResponseEntity<CreatePlayer201Response> createPlayer(@Valid @RequestBody CreatePlayerRequest createPlayerRequest) {
@@ -78,6 +82,11 @@ public class PlayersApiController {
             response.setLevel(player.getLevel());
             response.setPoints(player.getPoints());
             response.setMilestones(player.getMilestones());
+
+            // Make HTTP call to achievements service
+            String achievementsUrl = "http://localhost:8081/achievements/match";
+            ResponseEntity<String> achievementsResponse = restTemplate.postForEntity(achievementsUrl, response, String.class);
+            System.out.println(achievementsResponse.getBody());
 
             return ResponseEntity.ok(response);
         } else {
