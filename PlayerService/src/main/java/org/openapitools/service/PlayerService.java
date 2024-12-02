@@ -6,6 +6,7 @@ import org.openapitools.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -39,5 +40,9 @@ public class PlayerService {
 
     public Optional<Player> findByGameIdAndName(String gameId, String name) {
         return playerRepository.findByGameIdAndName(gameId, name);
+    }
+
+    public List<Player> findByGameId(String gameId) {
+        return playerRepository.findByGameId(gameId);
     }
 }

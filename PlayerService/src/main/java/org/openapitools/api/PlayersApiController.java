@@ -144,4 +144,18 @@ public class PlayersApiController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PostMapping("/updateProgressByGameId")
+    public ResponseEntity<Void> updateProgressByGameId(@RequestParam String gameId) {
+        List<Player> players = playerService.findByGameId(gameId);
+        for (Player player : players) {
+            UpdatePlayerProgressRequest updateRequest = new UpdatePlayerProgressRequest();
+            updateRequest.setLevel(player.getLevel());
+            updateRequest.setPoints(player.getPoints());
+            updateRequest.setMilestones(player.getMilestones());
+
+            updatePlayerProgress(player.getId(), updateRequest);
+        }
+        return ResponseEntity.ok().build();
+    }
 }
