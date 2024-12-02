@@ -1,0 +1,19 @@
+{
+  "name": "notificationservice",
+  "version": "1.0.0",
+  "main": "notification.js",
+  "scripts": {
+    "start": "node notification.js",
+    "dev": "nodemon notification.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
