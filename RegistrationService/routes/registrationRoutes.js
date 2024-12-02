@@ -102,6 +102,38 @@ fastify.post('/login', async (request, reply) => {
   reply.send({ token });
 });
 
+// Change password route
+fastify.post('/changepassword', { preValidation: [fastify.authenticate] }, async (request, reply) => {
+  const { currentPassword, newPassword } = request.body;
+  const userId = request.user.id;
+
+  // Validate request body
+  if (!currentPassword || !newPassword) {
+    return reply.status(400).send({ message: 'Current password and new password are required' });
+  }
+
+  // Find the user by ID
+  const user = await User.findById(userId);
+  if (!user) {
+    return reply.status(404).send({ message: 'User not found' });
+  }
+
+  // Check the current password
+  const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+  if (!isPasswordValid) {
+    return reply.status(401).send({ message: 'Invalid current password' });
+  }
+
+  // Hash the new password
+  const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+  // Update the user's password
+  user.password = hashedNewPassword;
+  await user.save();
+
+  reply.send({ message: 'Password changed successfully' });
+});
+
 // Protected route example
 fastify.get('/protected', { preValidation: [fastify.authenticate] }, async (request, reply) => {
   reply.send({ message: 'This is a protected route', user: request.user });
