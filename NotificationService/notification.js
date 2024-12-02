@@ -1,27 +1,51 @@
 const WebSocket = require('ws');
+const amqp = require('amqplib/callback_api');
 
 const wss = new WebSocket.Server({ port: 8084 });
 
 wss.on('connection', (ws) => {
-  console.log('Client connected');
+    console.log('Client connected');
 
-  // Send a welcome message when a client connects
-  ws.send('Welcome! You are now connected to the notification server.');
-
-  // Handle incoming messages from the client (if needed)
-  ws.on('message', (message) => {
-    console.log('Received:', message);
-  });
-
-  // Simulate sending a notification after 5 seconds
-  setTimeout(() => {
-    ws.send('You have a new notification!');
-  }, 5000);
-
-  // Handle client disconnect
-  ws.on('close', () => {
-    console.log('Client disconnected');
-  });
+    ws.on('close', () => {
+        console.log('Client disconnected');
+    });
 });
 
-console.log('WebSocket server is running on ws://localhost:8084');
+amqp.connect('amqp://localhost', (error0, connection) => {
+    if (error0) {
+        throw error0;
+    }
+    connection.createChannel((error1, channel) => {
+        if (error1) {
+            throw error1;
+        }
+
+        const queue = 'achievement_notifications';
+
+        channel.assertQueue(queue, {
+            durable: false
+        });
+
+        console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
+
+        channel.consume(queue, (msg) => {
+            if (msg !== null) {
+                const message = msg.content.toString();
+                console.log(" [x] Received '%s'", message);
+
+                // Send the message to all connected WebSocket clients
+                wss.clients.forEach((client) => {
+                    if (client.readyState === WebSocket.OPEN) {
+                        client.send(message);
+                    }
+                });
+
+                channel.ack(msg);
+            }
+        }, {
+            noAck: false
+        });
+    });
+});
+
+console.log('WebSocket server is running on ws://localhost:8081');

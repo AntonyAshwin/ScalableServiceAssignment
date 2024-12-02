@@ -3,6 +3,7 @@ const router = express.Router();
 const Achievement = require("../models/Achievement");
 const PlayerAchievement = require("../models/PlayerAchievement");
 const axios = require("axios");
+const amqp = require('amqplib/callback_api');
 require('dotenv').config();
 
 // POST /achievements: Create a new achievement
@@ -90,6 +91,36 @@ router.post("/match", async (req, res) => {
 
     // Log new achievements
     console.log('New Achievements:', newAchievements);
+
+    // Send new achievements to RabbitMQ if not empty
+    if (newAchievements.length > 0) {
+      amqp.connect('amqp://localhost', (error0, connection) => {
+        if (error0) {
+          throw error0;
+        }
+        connection.createChannel((error1, channel) => {
+          if (error1) {
+            throw error1;
+          }
+
+          const queue = 'achievement_notifications';
+
+          channel.assertQueue(queue, {
+            durable: false
+          });
+
+          newAchievements.forEach(achievement => {
+            const message = `New achievement unlocked: ${achievement.name} - ${achievement.description}`;
+            channel.sendToQueue(queue, Buffer.from(message));
+            console.log(" [x] Sent '%s'", message);
+          });
+        });
+
+        setTimeout(() => {
+          connection.close();
+        }, 500);
+      });
+    }
 
     res.status(200).json(result);
   } catch (error) {
