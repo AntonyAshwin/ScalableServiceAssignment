@@ -1,0 +1,523 @@
+openapi: 3.0.1
+info:
+  title: Achievement and Player Service API
+  description: This API manages player achievements and profiles, tracks in-game progress, awards achievements based on player milestones, and sends notifications.
+  version: 1.0.0
+  contact:
+    name: Your Name
+    email: your-email@example.com
+    url: https://www.example.com
+servers:
+  - url: http://localhost:8081
+    description: Local server
+paths:
+  /achievements:
+    post:
+      summary: Create a new achievement
+      operationId: createAchievement
+      tags:
+        - Achievements
+      requestBody:
+        description: The achievement object that needs to be created.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Achievement'
+      responses:
+        '201':
+          description: Achievement created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AchievementResponse'
+        '400':
+          description: Invalid request body
+  /achievements/{gameId}:
+    get:
+      summary: Retrieve the achievements for a game
+      operationId: getAchievementsByGameId
+      tags:
+        - Achievements
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          description: The ID of the game
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Achievements retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AchievementResponse'
+        '404':
+          description: No achievements found for this gameId
+  /achievements/match:
+    post:
+      summary: Match achievements based on criteria
+      operationId: matchAchievements
+      tags:
+        - Achievements
+      requestBody:
+        description: The criteria to match achievements
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchCriteria'
+      responses:
+        '200':
+          description: Achievements matched successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AchievementResponse'
+        '500':
+          description: Error matching achievements
+  /players:
+    post:
+      summary: Create a new player
+      operationId: createPlayer
+      tags:
+        - Players
+      requestBody:
+        description: The player object that needs to be created.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePlayerRequest'
+      responses:
+        '201':
+          description: Player created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePlayer201Response'
+        '400':
+          description: Invalid request body
+  /players/{playerId}:
+    get:
+      summary: Retrieve player details
+      operationId: getPlayer
+      tags:
+        - Players
+      parameters:
+        - name: playerId
+          in: path
+          required: true
+          description: The unique identifier of the player.
+          schema:
+            type: string
+            example: "player-12345"
+      responses:
+        '200':
+          description: Player details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPlayer200Response'
+        '404':
+          description: Player not found
+  /players/{playerId}/progress:
+    patch:
+      summary: Update player progress (e.g., levels, points, milestones)
+      operationId: updatePlayerProgress
+      tags:
+        - Players
+      parameters:
+        - name: playerId
+          in: path
+          required: true
+          description: The unique identifier of the player.
+          schema:
+            type: string
+            example: "player-12345"
+      requestBody:
+        description: The updated progress data for the player.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePlayerProgressRequest'
+      responses:
+        '200':
+          description: Player progress updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerProgressResponse'
+        '400':
+          description: Invalid request body
+        '404':
+          description: Player not found
+    get:
+      summary: Retrieve player progress (level, points, milestones)
+      operationId: getPlayerProgress
+      tags:
+        - Players
+      parameters:
+        - name: playerId
+          in: path
+          required: true
+          description: The unique identifier of the player.
+          schema:
+            type: string
+            example: "player-12345"
+      responses:
+        '200':
+          description: Player progress retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerProgressResponse'
+        '404':
+          description: Player not found
+  /register:
+    post:
+      summary: Register a new user
+      operationId: registerUser
+      tags:
+        - Registration
+      requestBody:
+        description: The user registration details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterUserRequest'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterUserResponse'
+        '400':
+          description: Invalid request body
+        '409':
+          description: User with this name or email already exists
+  /login:
+    post:
+      summary: Login a user
+      operationId: loginUser
+      tags:
+        - Authentication
+      requestBody:
+        description: The user login details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginUserRequest'
+      responses:
+        '200':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginUserResponse'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Invalid email or password
+  /changepassword:
+    post:
+      summary: Change user password
+      operationId: changePassword
+      tags:
+        - Authentication
+      requestBody:
+        description: The current and new password details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangePasswordResponse'
+        '400':
+          description: Invalid request body
+        '401':
+          description: Invalid current password
+        '404':
+          description: User not found
+  /notifications:
+    post:
+      summary: Send a notification to a player
+      operationId: sendNotification
+      tags:
+        - Notifications
+      requestBody:
+        description: The notification details that need to be sent to the player.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendNotificationRequest'
+      responses:
+        '200':
+          description: Notification sent successfully
+        '400':
+          description: Invalid request body
+        '404':
+          description: Player not found
+components:
+  schemas:
+    Achievement:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the achievement
+          example: "Level Up"
+        description:
+          type: string
+          description: A description of the achievement
+          example: "Awarded when the player reaches level 10."
+        gameId:
+          type: string
+          description: The ID of the game the achievement is for
+          example: "game-12345"
+        criteria:
+          type: object
+          properties:
+            level:
+              type: integer
+              description: The level required to unlock the achievement
+              example: 10
+            points:
+              type: integer
+              description: The points required to unlock the achievement
+              example: 1000
+    AchievementResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the achievement
+          example: "Level Up"
+        description:
+          type: string
+          description: A description of the achievement
+          example: "Awarded when the player reaches level 10."
+    MatchCriteria:
+      type: object
+      properties:
+        gameId:
+          type: string
+          description: The ID of the game
+          example: "game-12345"
+        level:
+          type: integer
+          description: The current level of the player
+          example: 5
+        points:
+          type: integer
+          description: The points the player has earned
+          example: 1500
+        milestones:
+          type: array
+          items:
+            type: string
+          description: List of milestones the player has achieved
+          example:
+            - "First Kill"
+            - "Reached Level 5"
+    CreatePlayerRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the player
+          example: "John Doe"
+        email:
+          type: string
+          description: The email of the player
+          example: "john.doe@example.com"
+        gameId:
+          type: string
+          description: The ID of the game the player is registered for
+          example: "game-12345"
+    CreatePlayer201Response:
+      type: object
+      properties:
+        playerId:
+          type: string
+          description: The unique identifier for the player
+          example: "player-12345"
+    GetPlayer200Response:
+      type: object
+      properties:
+        playerId:
+          type: string
+          description: The unique identifier of the player
+          example: "player-12345"
+        name:
+          type: string
+          description: The name of the player
+          example: "John Doe"
+        email:
+          type: string
+          description: The email of the player
+          example: "john.doe@example.com"
+        gameId:
+          type: string
+          description: The ID of the game the player is registered for
+          example: "game-12345"
+        createdAt:
+          type: string
+          format: date-time
+          description: The date and time when the player was created
+          example: "2024-12-01T00:00:00Z"
+    UpdatePlayerProgressRequest:
+      type: object
+      properties:
+        level:
+          type: integer
+          description: The current level of the player
+          example: 5
+        points:
+          type: integer
+          description: The points the player has earned
+          example: 1500
+        milestones:
+          type: array
+          items:
+            type: string
+          description: List of milestones the player has achieved
+          example:
+            - "First Kill"
+            - "Reached Level 5"
+    PlayerProgressResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the player
+          example: "player-12345"
+        gameId:
+          type: string
+          description: The ID of the game the player is registered for
+          example: "game-12345"
+        level:
+          type: integer
+          description: The current level of the player
+          example: 5
+        points:
+          type: integer
+          description: The points the player has earned
+          example: 1500
+        milestones:
+          type: array
+          items:
+            type: string
+          description: List of milestones the player has achieved
+          example:
+            - "First Kill"
+            - "Reached Level 5"
+    RegisterUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the user
+          example: "John Doe"
+        password:
+          type: string
+          description: The password of the user
+          example: "password123"
+        gameId:
+          type: string
+          description: The ID of the game the user is registering for
+          example: "game-12345"
+        email:
+          type: string
+          description: The email of the user
+          example: "john.doe@example.com"
+    RegisterUserResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: "User registered successfully"
+        user:
+          type: object
+          properties:
+            name:
+              type: string
+              description: The name of the user
+              example: "John Doe"
+            email:
+              type: string
+              description: The email of the user
+              example: "john.doe@example.com"
+            gameId:
+              type: string
+              description: The ID of the game the user is registered for
+              example: "game-12345"
+    LoginUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          description: The email of the user
+          example: "john.doe@example.com"
+        password:
+          type: string
+          description: The password of the user
+          example: "password123"
+    LoginUserResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT token
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    ChangePasswordRequest:
+      type: object
+      properties:
+        currentPassword:
+          type: string
+          description: The current password of the user
+          example: "currentpassword"
+        newPassword:
+          type: string
+          description: The new password of the user
+          example: "newpassword"
+    ChangePasswordResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: "Password changed successfully"
+    SendNotificationRequest:
+      type: object
+      properties:
+        playerId:
+          type: string
+          description: The unique identifier of the player to receive the notification
+          example: "player-12345"
+        message:
+          type: string
+          description: The content of the notification
+          example: "Congratulations! You've earned the 'Level Up' achievement!"
+        sentAt:
+          type: string
+          format: date-time
+          description: The date and time when the notification is sent
+          example: "2024-12-01T10:30:00Z"
