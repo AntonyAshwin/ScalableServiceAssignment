@@ -1,6 +1,7 @@
 package org.openapitools.api;
 
 import org.openapitools.model.Player;
+import org.openapitools.model.AchievementResponse;
 import org.openapitools.model.CreatePlayer201Response;
 import org.openapitools.model.CreatePlayerRequest;
 import org.openapitools.model.GetPlayer200Response;
@@ -12,9 +13,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 
 import javax.validation.Valid;
 import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/players")
@@ -85,8 +91,24 @@ public class PlayersApiController {
 
             // Make HTTP call to achievements service
             String achievementsUrl = "http://localhost:8081/achievements/match";
-            ResponseEntity<String> achievementsResponse = restTemplate.postForEntity(achievementsUrl, response, String.class);
-            System.out.println(achievementsResponse.getBody());
+            ResponseEntity<List<AchievementResponse>> achievementsResponse = restTemplate.exchange(
+                achievementsUrl,
+                HttpMethod.POST,
+                new HttpEntity<>(response),
+                new ParameterizedTypeReference<List<AchievementResponse>>() {}
+            );
+            List<AchievementResponse> achievements = achievementsResponse.getBody();
+            System.out.println(achievements);
+
+            // Update player's milestones with the response from achievements service
+            if (achievements != null) {
+                List<String> newMilestones = achievements.stream()
+                    .map(AchievementResponse::getName)
+                    .collect(Collectors.toList());
+                player.setMilestones(newMilestones);
+                playerService.save(player);
+                response.setMilestones(newMilestones);
+            }
 
             return ResponseEntity.ok(response);
         } else {
