@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: registrationservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: registrationservice
+  template:
+    metadata:
+      labels:
+        app: registrationservice
+    spec:
+      containers:
+      - name: rs1
+        image: registrationservice:latest
+        ports:
+        - containerPort: 8082

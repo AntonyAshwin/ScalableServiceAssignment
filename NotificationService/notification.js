@@ -2,9 +2,17 @@ const WebSocket = require('ws');
 const amqp = require('amqplib/callback_api');
 
 const wss = new WebSocket.Server({ port: 8084 });
+let messages = [];
 
 wss.on('connection', (ws) => {
     console.log('Client connected');
+    console.log(messages);
+    // Send all stored messages to the newly connected client
+    messages.forEach((message) => {
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(message);
+        }
+    });
 
     ws.on('close', () => {
         console.log('Client disconnected');
@@ -33,6 +41,9 @@ amqp.connect('amqp://localhost', (error0, connection) => {
                 const message = msg.content.toString();
                 console.log(" [x] Received '%s'", message);
 
+                // Store the message
+                messages.push(message);
+
                 // Send the message to all connected WebSocket clients
                 wss.clients.forEach((client) => {
                     if (client.readyState === WebSocket.OPEN) {
@@ -48,4 +59,4 @@ amqp.connect('amqp://localhost', (error0, connection) => {
     });
 });
 
-console.log('WebSocket server is running on ws://localhost:8081');
+console.log('WebSocket server is running on ws://localhost:8084');

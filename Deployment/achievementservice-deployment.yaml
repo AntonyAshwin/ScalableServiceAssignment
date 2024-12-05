@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: achievementservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: achievementservice
+  template:
+    metadata:
+      labels:
+        app: achievementservice
+    spec:
+      containers:
+      - name: as1
+        image: achievementservice:latest
+        ports:
+        - containerPort: 8081

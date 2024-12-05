@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+  - name: management-ui # Name for the management UI port
+    protocol: TCP
+    port: 15672
+    targetPort: 15672
+  - name: messaging # Name for the messaging port
+    protocol: TCP
+    port: 5672
+    targetPort: 5672
+  type: ClusterIP

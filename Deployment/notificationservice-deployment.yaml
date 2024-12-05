@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notificationservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notificationservice
+  template:
+    metadata:
+      labels:
+        app: notificationservice
+    spec:
+      containers:
+      - name: ns1
+        image: notificationservice:latest
+        ports:
+        - containerPort: 8084
