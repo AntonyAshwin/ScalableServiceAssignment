@@ -96,11 +96,13 @@ router.post("/match", async (req, res) => {
     if (newAchievements.length > 0) {
       amqp.connect('amqp://localhost', (error0, connection) => {
         if (error0) {
-          throw error0;
+          console.error("Failed to connect to RabbitMQ:", error0);
+          return; // Exit the function if connection fails
         }
         connection.createChannel((error1, channel) => {
           if (error1) {
-            throw error1;
+            console.error("Failed to create channel:", error1);
+            return; // Exit the function if channel creation fails
           }
 
           const queue = 'achievement_notifications';
@@ -111,14 +113,18 @@ router.post("/match", async (req, res) => {
 
           newAchievements.forEach(achievement => {
             const message = `New achievement unlocked: ${achievement.name} - ${achievement.description}`;
-            channel.sendToQueue(queue, Buffer.from(message));
-            console.log(" [x] Sent '%s'", message);
+            try {
+              channel.sendToQueue(queue, Buffer.from(message));
+              console.log(" [x] Sent '%s'", message);
+            } catch (error) {
+              console.error("Failed to send notification:", error);
+            }
           });
-        });
 
-        setTimeout(() => {
-          connection.close();
-        }, 500);
+          setTimeout(() => {
+            connection.close();
+          }, 500);
+        });
       });
     }
 

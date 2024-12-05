@@ -1,0 +1,2 @@
+inital issue came where it was giving syntax error, was solved when i modifed the dockerfile
+added the npm install before npm start in the dockerfile
