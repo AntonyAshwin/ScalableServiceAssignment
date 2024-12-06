@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  JWT_SECRET: ashwinsjwtsecret
+  MONGO_URI: mongodb+srv://ashwin:uptgMlQmuUfKWd4M@cluster0.jestr.mongodb.net/RegisterService?retryWrites=true&w=majority&appName=Cluster0
+  PLAYER_SERVICE_URL: http://player:8080
+kind: ConfigMap
+metadata:
+  labels:
+    io.kompose.service: register-register-env
+  name: register-env
