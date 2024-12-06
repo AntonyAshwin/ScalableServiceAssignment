@@ -1,3 +1,6 @@
+kubectl apply -f .
+
+
 kubectl delete deployment achievement
 kubectl delete deployment notification
 kubectl delete deployment player
@@ -13,7 +16,6 @@ kubectl delete service rabbitmq
 kubectl delete service register
 kubectl delete service registrationservice
 
-kubectl apply -f .
 
 kubectl get services         
 
