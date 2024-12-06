@@ -1,0 +1,28 @@
+kubectl delete deployment achievement
+kubectl delete deployment notification
+kubectl delete deployment player
+kubectl delete deployment rabbitmq
+kubectl delete deployment register
+kubectl delete deployment registrationservice
+
+
+kubectl delete service achievement
+kubectl delete service notification
+kubectl delete service player
+kubectl delete service rabbitmq
+kubectl delete service register
+kubectl delete service registrationservice
+
+kubectl apply -f .
+
+kubectl get services         
+
+
+port forwarding 
+
+kubectl port-forward service/achievement 8081:8081
+kubectl port-forward service/notification 8084:8084
+kubectl port-forward service/player 8080:8080
+kubectl port-forward service/rabbitmq 15672:15672
+kubectl port-forward service/rabbitmq 5672:5672
+kubectl port-forward service/register 8085:8085
