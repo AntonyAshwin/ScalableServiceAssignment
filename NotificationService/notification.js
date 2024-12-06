@@ -19,7 +19,7 @@ wss.on('connection', (ws) => {
     });
 });
 
-amqp.connect('amqp://localhost', (error0, connection) => {
+amqp.connect('amqp://rabbitmq', (error0, connection) => {
     if (error0) {
         throw error0;
     }
@@ -59,4 +59,4 @@ amqp.connect('amqp://localhost', (error0, connection) => {
     });
 });
 
-console.log('WebSocket server is running on ws://localhost:8084');
+console.log('WebSocket server is running on ws://notification:8084');

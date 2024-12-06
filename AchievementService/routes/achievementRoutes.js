@@ -20,8 +20,8 @@ router.post("/", async (req, res) => {
     await achievement.save();
 
     // Call the updateProgressByGameId endpoint
-    const playerServiceUrl = process.env.PLAYER_SERVICE_URL;
-    axios.post(`${playerServiceUrl}/players/updateProgressByGameId?gameId=${gameId}`);
+    // const playerServiceUrl = process.env.PLAYER_SERVICE_URL;
+    // axios.post(`${playerServiceUrl}/players/updateProgressByGameId?gameId=${gameId}`);
 
     res.status(201).json({ message: "Achievement created!", achievement });
   } catch (error) {
@@ -94,7 +94,7 @@ router.post("/match", async (req, res) => {
 
     // Send new achievements to RabbitMQ if not empty
     if (newAchievements.length > 0) {
-      amqp.connect('amqp://localhost', (error0, connection) => {
+      amqp.connect('amqp://rabbitmq', (error0, connection) => {
         if (error0) {
           console.error("Failed to connect to RabbitMQ:", error0);
           return; // Exit the function if connection fails

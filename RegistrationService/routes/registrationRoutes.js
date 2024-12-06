@@ -1,48 +1,47 @@
 require('dotenv').config();
-const fastify = require('fastify')({ logger: true });
+const express = require('express');
 const mongoose = require('mongoose');
 const axios = require('axios');
 const bcrypt = require('bcrypt');
-const fastifyJwt = require('fastify-jwt');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
-console.log("a123 ", process.env.MONGO_URI);
+const app = express();
+app.use(express.json());
+const playerServiceUrl = process.env.PLAYER_SERVICE_URL || 'http://localhost:8080';
+const mongoUri = process.env.MONGO_URI;
+if (!mongoUri) {
+  console.error('MONGO_URI is not defined in the .env file');
+  process.exit(1);
+}
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(mongoUri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-// Define the User schema
-const userSchema = new mongoose.Schema({
-  name: { type: String, unique: true },
-  password: String,
-  gameId: String,
-  email: { type: String, unique: true },
-});
-
-const User = mongoose.model('User', userSchema);
-
-// Register JWT plugin
-fastify.register(fastifyJwt, {
-  secret: process.env.JWT_SECRET
-});
-
 // JWT authentication middleware
-fastify.decorate("authenticate", async function(request, reply) {
+const authenticate = (req, res, next) => {
+  const token = req.header('Authorization').replace('Bearer ', '');
   try {
-    await request.jwtVerify();
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
   } catch (err) {
-    reply.send(err);
+    res.status(401).send({ message: 'Unauthorized' });
   }
-});
+};
 
 // Register route
-fastify.post('/register', async (request, reply) => {
-  const { name, password, gameId, email } = request.body;
+app.post('/register', async (req, res) => {
+  const { name, password, gameId, email } = req.body;
 
   // Validate request body
   if (!name || !password || !gameId || !email) {
-    return reply.status(400).send({ message: 'All fields are required' });
+    return res.status(400).send({ message: 'All fields are required' });
   }
 
   // Hash the password
@@ -55,7 +54,7 @@ fastify.post('/register', async (request, reply) => {
     await user.save();
 
     // Notify PlayerService
-    const response = await axios.post('http://localhost:8080/players', {
+    const response = await axios.post(`${playerServiceUrl}/players`, {
       name,
       email,
       gameId
@@ -63,65 +62,65 @@ fastify.post('/register', async (request, reply) => {
 
     console.log('PlayerService response:', response.data);
 
-    reply.status(201).send({ message: 'User registered successfully', user });
+    res.status(201).send({ message: 'User registered successfully', user });
   } catch (error) {
     if (error.code === 11000) {
       // Duplicate key error
       const duplicateField = error.keyPattern.name ? 'name' : 'email';
-      reply.status(409).send({ message: `User with this ${duplicateField} already exists` });
+      res.status(409).send({ message: `User with this ${duplicateField} already exists` });
     } else {
-      reply.status(500).send({ message: 'Error registering user', error });
+      res.status(500).send({ message: 'Error registering user', error });
     }
   }
 });
 
 // Login route
-fastify.post('/login', async (request, reply) => {
-  const { email, password } = request.body;
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
 
   // Validate request body
   if (!email || !password) {
-    return reply.status(400).send({ message: 'Email and password are required' });
+    return res.status(400).send({ message: 'Email and password are required' });
   }
 
   // Find the user by email
   const user = await User.findOne({ email });
   if (!user) {
-    return reply.status(401).send({ message: 'Invalid email or password' });
+    return res.status(401).send({ message: 'Invalid email or password' });
   }
 
   // Check the password
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) {
-    return reply.status(401).send({ message: 'Invalid email or password' });
+    return res.status(401).send({ message: 'Invalid email or password' });
   }
 
   // Generate JWT token with expiry time
-  const token = fastify.jwt.sign({ id: user._id, email: user.email, name: user.name, gameId: user.gameId }, { expiresIn: '1h' });
+  const token = jwt.sign({ id: user._id, email: user.email, name: user.name, gameId: user.gameId }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-  reply.send({ token });
+  res.send({ token });
 });
 
 // Change password route
-fastify.post('/changepassword', { preValidation: [fastify.authenticate] }, async (request, reply) => {
-  const { currentPassword, newPassword } = request.body;
-  const userId = request.user.id;
+app.post('/changepassword', authenticate, async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const userId = req.user.id;
 
   // Validate request body
   if (!currentPassword || !newPassword) {
-    return reply.status(400).send({ message: 'Current password and new password are required' });
+    return res.status(400).send({ message: 'Current password and new password are required' });
   }
 
   // Find the user by ID
   const user = await User.findById(userId);
   if (!user) {
-    return reply.status(404).send({ message: 'User not found' });
+    return res.status(404).send({ message: 'User not found' });
   }
 
   // Check the current password
   const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
   if (!isPasswordValid) {
-    return reply.status(401).send({ message: 'Invalid current password' });
+    return res.status(401).send({ message: 'Invalid current password' });
   }
 
   // Hash the new password
@@ -131,22 +130,16 @@ fastify.post('/changepassword', { preValidation: [fastify.authenticate] }, async
   user.password = hashedNewPassword;
   await user.save();
 
-  reply.send({ message: 'Password changed successfully' });
+  res.send({ message: 'Password changed successfully' });
 });
 
 // Protected route example
-fastify.get('/protected', { preValidation: [fastify.authenticate] }, async (request, reply) => {
-  reply.send({ message: 'This is a protected route', user: request.user });
+app.get('/protected', authenticate, (req, res) => {
+  res.send({ message: 'This is a protected route', user: req.user });
 });
 
 // Start the server
-const start = async () => {
-  try {
-    await fastify.listen({ port: 8082 });
-    fastify.log.info(`Server running at http://localhost:8082/`);
-  } catch (err) {
-    fastify.log.error(err);
-    process.exit(1);
-  }
-};
-start();
+const PORT = process.env.PORT || 8085;
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}/`);
+});

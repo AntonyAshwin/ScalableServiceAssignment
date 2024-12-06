@@ -7,6 +7,9 @@ WORKDIR /app
 # Copy the JAR file from the target directory to the working directory
 COPY target/openapi-spring-1.0.0.jar app.jar
 
+# Copy the application.properties file to the working directory
+COPY src/main/resources/application.properties /app/application.properties
+
 # Expose the port the application runs on
 EXPOSE 8080
 

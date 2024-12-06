@@ -1,3 +1,4 @@
+org/openapitools/api/PlayersApiController$1.class
 org/openapitools/model/PlayerProgressResponse.class
 org/openapitools/api/ApiUtil.class
 org/openapitools/configuration/HomeController.class
@@ -10,6 +11,7 @@ org/openapitools/api/PlayersApiController.class
 org/openapitools/service/PlayerService.class
 org/openapitools/configuration/SpringDocConfiguration.class
 org/openapitools/OpenApiGeneratorApplication.class
+org/openapitools/model/AchievementResponse.class
 org/openapitools/configuration/MongoConnectionChecker.class
 org/openapitools/model/CreatePlayer201Response.class
 org/openapitools/model/UpdatePlayerProgressRequest.class

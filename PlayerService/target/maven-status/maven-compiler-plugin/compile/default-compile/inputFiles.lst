@@ -5,6 +5,7 @@
 /Users/I528714/3rdsem/ss/PlayerService/src/main/java/org/openapitools/model/CreatePlayerRequest.java
 /Users/I528714/3rdsem/ss/PlayerService/src/main/java/org/openapitools/model/CreatePlayer201Response.java
 /Users/I528714/3rdsem/ss/PlayerService/src/main/java/org/openapitools/OpenApiGeneratorApplication.java
+/Users/I528714/3rdsem/ss/PlayerService/src/main/java/org/openapitools/model/AchievementResponse.java
 /Users/I528714/3rdsem/ss/PlayerService/src/main/java/org/openapitools/model/Player.java
 /Users/I528714/3rdsem/ss/PlayerService/src/main/java/org/openapitools/configuration/MongoConnectionChecker.java
 /Users/I528714/3rdsem/ss/PlayerService/src/main/java/org/openapitools/repository/PlayerRepository.java

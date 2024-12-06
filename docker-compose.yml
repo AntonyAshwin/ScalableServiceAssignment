@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  register:
+    build: ./RegistrationService
+    ports:
+      - "8085:8085" # Adjust as needed
+    networks:
+      - app_network
+    env_file:
+      - ./RegistrationService/.env
+
+  player:
+    build: ./PlayerService
+    ports:
+      - "8080:8080"
+    networks:
+      - app_network
+
+  achievement:
+    build: ./AchievementService
+    ports:
+      - "8081:8081"
+    networks:
+      - app_network
+    env_file:
+      - ./AchievementService/.env
+
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "15672:15672" # Management UI port
+      - "5672:5672"   # Messaging port
+    networks:
+      - app_network
+
+  notification:
+    build: ./NotificationService
+    ports:
+      - "8084:8084"
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
